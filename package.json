@@ -6,7 +6,8 @@
     "dependencies": {
         "underscore":"1.5.x",
         "express": "3.3.x",
-        "nodemailer":"0.5.x"
+        "nodemailer":"0.5.x",
+        "mongodb" : "2.4.x"
 
     }
 }
