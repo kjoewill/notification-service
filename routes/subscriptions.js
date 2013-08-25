@@ -1,6 +1,5 @@
-var mdb = require('../lib/mdb.js')
-
-var db = mdb.DB;
+var mongo = require('mongodb');
+var mongoUri = process.env.MONGOLAB_URI ||process.env.MONGOHQ_URL ||'mongodb://localhost/mydb';
  
 exports.findById = function(req, res) {
     var id = req.params.id;
@@ -13,26 +12,35 @@ exports.findById = function(req, res) {
 };
  
 exports.findAll = function(req, res) {
+
+  mongo.Db.connect(mongoUri, function (err, db) {
+
     db.collection('subscriptions', function(err, collection) {
-        collection.find().toArray(function(err, items) {
-            res.send(items);
-        });
+      collection.find().toArray(function(err, items) {
+        res.send(items);
+      });
     });
-};
+ });
+}
  
 exports.addSubscription = function(req, res) {
-    var subscription = req.body;
-    console.log('Adding subscription: ' + JSON.stringify(subscription));
+  var subscription = req.body;
+  console.log('Adding subscription: ' + JSON.stringify(subscription));
+
+  mongo.Db.connect(mongoUri, function (err, db) {
+
     db.collection('subscriptions', function(err, collection) {
-        collection.insert(subscription, {safe:true}, function(err, result) {
-            if (err) {
-                res.send({'error':'An error has occurred'});
-            } else {
-                console.log('Success: ' + JSON.stringify(result[0]));
-                res.send(result[0]);
-            }
-        });
+      collection.insert(subscription, {safe:true}, function(err, result) {
+        if (err) {
+          res.send({'error':'An error has occurred'});
+        } else {
+          console.log('Success: ' + JSON.stringify(result[0]));
+          res.send(result[0]);
+        }
+      });
     });
+  });
+
 }
  
 exports.updateSubscription = function(req, res) {
