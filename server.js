@@ -30,5 +30,5 @@ console.log ('registering signal routes with express');
 app.post('/signals', signal.processSignal);
 
 console.log ('About to start listening');
-app.listen(3000);
+app.listen(port);
 console.log('Listening on port: ', port);
