@@ -1,5 +1,6 @@
 var mongo = require('mongodb');
 var mongoUri = process.env.MONGOLAB_URI ||process.env.MONGOHQ_URL ||'mongodb://localhost/mydb';
+var BSON = mongo.BSONPure;
  
 
 exports.findById = function(req, res) {
@@ -65,20 +66,21 @@ exports.updateEvent = function(req, res) {
 }
  
 exports.deleteEvent = function(req, res) {
-    var id = req.params.id;
-    console.log ('creating ObjectID');
-    newId = new ObjectID(id);
-    console.log ('Here it is: ', newId);
-    console.log('Deleting event: ' + id);
-    ndb.collection('events', function(err, collection) {
-        collection.remove({'_id':new ObjectID(id)}, {safe:true}, function(err, result) {
-            if (err) {
-                res.send({'error':'An error has occurred - ' + err});
-            } else {
-                console.log('' + result + ' document(s) deleted');
-                res.send(req.body);
-            }
-        });
+  var id = req.params.id;
+  console.log('Deleting event: ' + id);
+
+  mongo.Db.connect(mongoUri, function (err, db) {
+
+    db.collection('events', function(err, collection) {
+      collection.remove({'_id':new BSON.ObjectID(id)}, {safe:true}, function(err, result) {
+         if (err) {
+           res.send({'error':'An error has occurred - ' + err});
+         } else {
+           console.log('' + result + ' document(s) deleted');
+           res.send(req.body);
+         }
+      });
     });
+  });
 }
  
