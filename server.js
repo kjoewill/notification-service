@@ -2,6 +2,7 @@ var express = require('express');
 var event = require('./routes/events');
 var sub = require('./routes/subscriptions');
 var signal = require('./routes/signals');
+var resetdb = require('./routes/resetdbs');
 
 var port = (process.env.PORT || 3000);
 
