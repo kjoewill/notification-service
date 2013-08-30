@@ -1,23 +1,40 @@
 var mongo = require('mongodb');
 var mongoUri = process.env.MONGOLAB_URI ||process.env.MONGOHQ_URL ||'mongodb://localhost/mydb';
+var BSON = mongo.BSONPure;
  
+/*
+
+Subscriptions look like this in JSON
+
+  {
+    "eventTitle": "New CLM Build Available",
+    "alertEndpoint": "kjoewill@gmail.com",
+    "_id": "521a5af259b05b8099000002"
+  }
+
+*/
+
+
 exports.findById = function(req, res) {
-    var id = req.params.id;
-    console.log('Retrieving subscription: ' + id);
+  var id = req.params.id;
+
+  mongo.Db.connect(mongoUri, function (err, db) {
     db.collection('subscriptions', function(err, collection) {
-        collection.findOne({'_id':new ObjectID(id)}, function(err, item) {
-            res.send(item);
-        });
+      collection.findOne({'_id':new BSON.ObjectID(id)}, function(err, item) {
+        res.send(item);
+        db.close();
+      });
     });
-};
+  });
+}
  
 exports.findAll = function(req, res) {
 
   mongo.Db.connect(mongoUri, function (err, db) {
-
     db.collection('subscriptions', function(err, collection) {
       collection.find().toArray(function(err, items) {
         res.send(items);
+        db.close();
       });
     });
  });
@@ -25,57 +42,41 @@ exports.findAll = function(req, res) {
  
 exports.addSubscription = function(req, res) {
   var subscription = req.body;
-  console.log('Adding subscription: ' + JSON.stringify(subscription));
 
   mongo.Db.connect(mongoUri, function (err, db) {
-
     db.collection('subscriptions', function(err, collection) {
       collection.insert(subscription, {safe:true}, function(err, result) {
-        if (err) {
-          res.send({'error':'An error has occurred'});
-        } else {
-          console.log('Success: ' + JSON.stringify(result[0]));
-          res.send(result[0]);
-        }
+        res.send(result[0]);
+        db.close();
       });
     });
   });
-
 }
  
 exports.updateSubscription = function(req, res) {
-    var id = req.params.id;
-    var subscription = req.body;
-    console.log('Updating subscription: ' + id);
-    console.log(JSON.stringify(subscription));
+  var id = req.params.id;
+  var subscription = req.body;
+
+  mongo.Db.connect(mongoUri, function (err, db) {
     db.collection('subscriptions', function(err, collection) {
-        collection.update({'_id':new ObjectID(id)}, subscription, {safe:true}, function(err, result) {
-            if (err) {
-                console.log('Error updating subscription: ' + err);
-                res.send({'error':'An error has occurred'});
-            } else {
-                console.log('' + result + ' document(s) updated');
-                res.send(subscription);
-            }
-        });
+      collection.update({'_id':new BSON.ObjectID(id)}, subscription, {safe:true}, function(err, result) {
+        res.send(subscription);
+        db.close();
+      });
     });
+  });
 }
  
 exports.deleteSubscription = function(req, res) {
-    var id = req.params.id;
-    console.log ('creating ObjectID');
-    newId = new ObjectID(id);
-    console.log ('Here it is: ', newId);
-    console.log('Deleting subscription: ' + id);
+  var id = req.params.id;
+
+  mongo.Db.connect(mongoUri, function (err, db) {
     db.collection('subscriptions', function(err, collection) {
-        collection.remove({'_id':new ObjectID(id)}, {safe:true}, function(err, result) {
-            if (err) {
-                res.send({'error':'An error has occurred - ' + err});
-            } else {
-                console.log('' + result + ' document(s) deleted');
-                res.send(req.body);
-            }
-        });
+      collection.remove({'_id':new BSON.ObjectID(id)}, {safe:true}, function(err, result) {
+        res.send(req.body);
+        db.close()
+      });
     });
+  });
 }
  

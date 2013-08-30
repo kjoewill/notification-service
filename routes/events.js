@@ -1,84 +1,80 @@
 var mongo = require('mongodb');
 var mongoUri = process.env.MONGOLAB_URI ||process.env.MONGOHQ_URL ||'mongodb://localhost/mydb';
 var BSON = mongo.BSONPure;
+var dbutils = require('../lib/dbutils.js');
  
+/*
+Events look like this in JSON
+
+  {
+    "title": "News flash 6",
+    "_id": "521d8970a1b6cd31a3000001"
+  }
+
+*/
+
 
 exports.findById = function(req, res) {
-    var id = req.params.id;
-    console.log('Retrieving event: ' + id);
-    ndb.collection('events', function(err, collection) {
-        collection.findOne({'_id':new ObjectID(id)}, function(err, item) {
-            res.send(item);
-        });
+  var id = req.params.id;
+
+  mongo.Db.connect(mongoUri, function (err, db) {
+    db.collection('events', function(err, collection) {
+      collection.findOne({'_id':new BSON.ObjectID(id)}, function(err, item) {
+        res.send(item);
+        db.close();
+      });
     });
-};
+  });
+}
+
  
 exports.findAll = function(req, res) {
 
   mongo.Db.connect(mongoUri, function (err, db) {
-
     db.collection('events', function(er, collection) {
       collection.find().toArray(function(err, items) {
-        res.send(items)
+        res.send(items);
+        db.close();
       });
     });
   });
-
-};
+}
  
 exports.addEvent = function(req, res) {
   var event = req.body;
-  console.log('Adding event: ' + JSON.stringify(event));
 
   mongo.Db.connect(mongoUri, function (err, db) {
-
     db.collection('events', function(er, collection) {
       collection.insert(event, {safe:true}, function(err, result) {
-        if (err) {
-          res.send({'error':'An error has occurred'});
-        } else {
-           console.log('Success: ' + JSON.stringify(result[0]));
-           res.send(result[0]);
-        }
+        res.send(result[0]);
+        db.close();
       });
     });
-  
-   });
-
+  });
 }
  
 exports.updateEvent = function(req, res) {
-    var id = req.params.id;
-    var event = req.body;
-    console.log('Updating event: ' + id);
-    console.log(JSON.stringify(event));
-    ndb.collection('events', function(err, collection) {
-        collection.update({'_id':new ObjectID(id)}, event, {safe:true}, function(err, result) {
-            if (err) {
-                console.log('Error updating event: ' + err);
-                res.send({'error':'An error has occurred'});
-            } else {
-                console.log('' + result + ' document(s) updated');
-                res.send(event);
-            }
-        });
+  var id = req.params.id;
+  var event = req.body;
+
+  mongo.Db.connect(mongoUri, function (err, db) {
+    db.collection('events', function(err, collection) {
+      collection.update({'_id':new BSON.ObjectID(id)}, event, {safe:true}, function(err, result) {
+        res.send(event);
+        db.close();
+      });
     });
+  });
 }
  
 exports.deleteEvent = function(req, res) {
   var id = req.params.id;
-  console.log('Deleting event: ' + id);
 
   mongo.Db.connect(mongoUri, function (err, db) {
-
     db.collection('events', function(err, collection) {
       collection.remove({'_id':new BSON.ObjectID(id)}, {safe:true}, function(err, result) {
-         if (err) {
-           res.send({'error':'An error has occurred - ' + err});
-         } else {
-           console.log('' + result + ' document(s) deleted');
-           res.send(req.body);
-         }
+        res.send(req.body);
+        db.close();
       });
     });
   });
