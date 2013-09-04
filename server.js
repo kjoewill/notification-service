@@ -3,7 +3,8 @@ var event = require('./routes/events');
 var sub = require('./routes/subscriptions');
 var signal = require('./routes/signals');
 
-var port = (process.env.PORT || 3000);
+//var port = (process.env.PORT || 3000);
+var port = (process.env.VCAP_APP_PORT || 3000);
 
 var app = express();
  
