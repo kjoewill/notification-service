@@ -1,6 +1,9 @@
 var mongo = require('mongodb');
-var mongoUri = process.env.MONGOLAB_URI ||process.env.MONGOHQ_URL ||'mongodb://localhost/mydb';
+var BSON = mongo.BSONPure;
 
+var dbutils = require('../lib/dbutils.js');
+var mongoUri = dbutils.mongoUri;
+ 
 var mailer = require('../lib/mailer.js');
 var _ = require ('underscore');
  
