@@ -6,3 +6,4 @@ Event instance information specific to the signal.
 
 The service runs as a Node application and employs MongoDb as the backend.
 
+API information on the wiki
