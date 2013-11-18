@@ -40,7 +40,6 @@ exports.processSignal = function(req, res) {
     console.log('Processing Signal: ' + JSON.stringify(signal));
 
   mongo.Db.connect(mongoUri, function (err, db) {
-
     db.collection('subscriptions', function(err, collection) {
       collection.find().toArray(function(err, items) {
         matches = _.filter(items, function(sub){return sub.eventTitle == signal.eventTitle});
@@ -48,7 +47,15 @@ exports.processSignal = function(req, res) {
         res.send(matches);
       });   
     });
-
+  });
+  
+  // Log reception of the signal
+  mongo.Db.connect(mongoUri, function (err, db) {
+    db.collection('signalLog', function(er, collection) {
+      collection.insert(signal, {safe:true}, function(err, result) {
+        db.close();
+      });
+    });
   });
 
 }

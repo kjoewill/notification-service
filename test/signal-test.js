@@ -156,6 +156,23 @@ describe('Routing', function() {
         });
     });
 
+    //Event signal log tests
+	//
+    it('should retreive one log entry', function(done) {
+    request(url)
+	.get('/signallog')
+	.end(function(err, res) {
+          if (err) {
+            throw err;
+          }
+          res.should.have.status(200);
+		  res.body.should.have.lengthOf(1);
+          eventsArray = JSON.parse(res.text);
+          assert.equal(eventsArray[0].eventTitle, 'News flash 100');
+          done();
+        });
+    });
+
 
   });
 });
