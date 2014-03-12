@@ -1,0 +1,15 @@
+---
+applications:
+- name: notification-service
+  mem: 256M
+  instances: 1
+  host: notification-service-${random-word}
+  domain: ng.bluemix.net
+  path: .
+  command: node server.js
+  services:
+     mongodb-notifications: #Identifier for Mongodb Bound Service instance
+      label: mongodb
+      provider: core
+      version: '2.2'
+      plan: '100'

@@ -7,6 +7,7 @@
 	    "node": "0.10.15"
 	},
     "dependencies": {
+        "config": "*",
         "underscore":"1.5.x",
         "express": "3.3.x",
         "nodemailer":"0.5.x",
@@ -14,6 +15,7 @@
 
     },
     "devDependencies": {
+        "config": "*",
         "mocha": "*",
         "should": "1.2.x",
         "supertest": "0.7.x"
