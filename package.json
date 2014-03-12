@@ -3,6 +3,9 @@
     "description": "Very simple rest-based notification service",
     "version": "0.0.1",
     "private": true,
+	"engines": {
+	    "node": "0.10.15"
+	},
     "dependencies": {
         "underscore":"1.5.x",
         "express": "3.3.x",
